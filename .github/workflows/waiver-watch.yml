@@ -1,0 +1,43 @@
+name: Fantasy waiver-wire watch
+
+# Runs automatically on a schedule (GitHub's minimum is 5 minutes, though
+# actual firing can drift a few minutes under load -- still far faster than
+# a 60-minute check). You can change */5 below to */10 or */15 if you'd
+# rather space it out. You can also trigger it manually any time from the
+# Actions tab ("Run workflow" button) thanks to workflow_dispatch.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write   # needed so the workflow can commit the updated state file back
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run one check
+        env:
+          PUSHOVER_APP_TOKEN: ${{ secrets.PUSHOVER_APP_TOKEN }}
+          PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
+        run: python monitor.py
+
+      - name: Save updated state back to the repo
+        run: |
+          git config user.name "waiver-bot"
+          git config user.email "waiver-bot@users.noreply.github.com"
+          git add state.json players_cache.json 2>/dev/null || true
+          git diff --quiet --cached || git commit -m "Update waiver-watch state [skip ci]"
+          git push || true
