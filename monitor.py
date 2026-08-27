@@ -83,7 +83,14 @@ def check_player_statuses(ctx, st, events):
         if not changes:
             continue
 
-        result = classify_player_event(ctx, pid, name, "; ".join(changes))
+        result = classify_player_event(
+            ctx, pid, name, "; ".join(changes),
+            players=players,
+            nfl_team=p.get("team"),
+            position=p.get("position"),
+            prev_status_pair=(prev["status"], prev["injury_status"]),
+            current_status_pair=(current["status"], current["injury_status"]),
+        )
         if result:
             title, message, priority = result
             events.append((title, message, priority))
@@ -129,19 +136,28 @@ def run_once(st):
     if not events:
         return
 
+    # FYI-level events (no clear role/waiver impact) are tracked in state for
+    # future diffing but deliberately NOT pushed to your phone -- the whole
+    # point is fewer, more meaningful alerts focused on rostered-player impact,
+    # not a running feed of every minor news timestamp bump.
+    actionable = [e for e in events if e[2] > PRIORITY_FYI]
+    if not actionable:
+        return
+
     # Send ONE consolidated push per run instead of one per item -- this matters
     # most on the very first run (no prior state), where dozens of items can be
-    # "new" simultaneously. Sort so urgent stuff appears first within the digest.
+    # "new" simultaneously. Sort so urgent stuff (handcuff opportunities) appears
+    # first within the digest.
     order = {PRIORITY_URGENT: 0, PRIORITY_WATCH: 1, PRIORITY_FYI: 2}
-    events.sort(key=lambda e: order.get(e[2], 1))
-    max_priority = max(e[2] for e in events)
+    actionable.sort(key=lambda e: order.get(e[2], 1))
+    max_priority = max(e[2] for e in actionable)
 
-    if len(events) == 1:
-        title, message, _ = events[0]
+    if len(actionable) == 1:
+        title, message, _ = actionable[0]
         send_alert(title, message, priority=max_priority)
     else:
-        title = f"Waiver watch: {len(events)} updates"
-        message = "\n\n".join(f"\u2022 {t}: {m}" for t, m, _ in events)
+        title = f"Waiver watch: {len(actionable)} updates"
+        message = "\n\n".join(f"\u2022 {t}: {m}" for t, m, _ in actionable)
         # Pushover messages are capped at 1024 chars -- trim gracefully.
         if len(message) > 1000:
             message = message[:997] + "..."

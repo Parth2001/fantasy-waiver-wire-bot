@@ -100,17 +100,114 @@ class LeagueContext:
         return self.player_owner_roster.get(player_id)
 
 
-def classify_player_event(ctx: LeagueContext, player_id, player_name, event_description):
+NEGATIVE_STATUSES = {"Out", "Doubtful", "IR", "PUP", "NA", "Suspended", "COV", "Injured Reserve"}
+BACKUP_RELEVANT_POSITIONS = {"QB", "RB", "WR", "TE"}
+
+
+def _is_role_opening_change(event_description, prev_status_pair, current_status_pair):
+    """Heuristic: did this change plausibly knock the player OUT of their role
+    (as opposed to a minor news bump or an improvement, e.g. Questionable->Active)?"""
+    prev_status, prev_injury = prev_status_pair
+    cur_status, cur_injury = current_status_pair
+    if cur_injury in NEGATIVE_STATUSES and cur_injury != prev_injury:
+        return True
+    if cur_status in ("Inactive", "Injured Reserve", "PUP") and cur_status != prev_status:
+        return True
+    return False
+
+
+def find_position_backups(players, ctx, nfl_team, position, injured_player_id, limit=2):
+    """Same NFL team + same position, healthy, excluding the injured player --
+    sorted by depth chart order (or search rank if depth chart data is missing).
+    This is the actual 'who benefits' lookup, so alerts can name the handcuff
+    instead of just saying 'check for a beneficiary'."""
+    if not nfl_team or position not in BACKUP_RELEVANT_POSITIONS:
+        return []
+    candidates = []
+    for pid, p in players.items():
+        if pid == injured_player_id:
+            continue
+        if p.get("team") != nfl_team or p.get("position") != position:
+            continue
+        if p.get("status") in ("Inactive", "Injured Reserve", "PUP"):
+            continue  # skip other guys who are themselves out
+        candidates.append((pid, p))
+
+    def sort_key(item):
+        _, p = item
+        dco = p.get("depth_chart_order")
+        if dco is not None:
+            return (0, dco)
+        return (1, p.get("search_rank") or 9999)
+
+    candidates.sort(key=sort_key)
+
+    results = []
+    for pid, p in candidates[:limit]:
+        owner_rid = ctx.owner_of_player(pid)
+        results.append({
+            "player_id": pid,
+            "name": p.get("full_name") or pid,
+            "free_agent": owner_rid is None,
+            "owner_label": ctx.manager_label(owner_rid) if owner_rid is not None else None,
+        })
+    return results
+
+
+def classify_player_event(ctx: LeagueContext, player_id, player_name, event_description,
+                           players=None, nfl_team=None, position=None,
+                           prev_status_pair=None, current_status_pair=None):
     """
     Decide alert priority + framing for a player-status change (injury,
     inactive, IR, depth-chart signal, trending add spike, etc.)
 
+    The main goal here is NOT "a player somewhere changed status" -- it's
+    "does this open a role that has a still-unrostered beneficiary you can
+    grab before anyone else." That backup lookup runs whenever we have the
+    player pool available and the change looks role-opening.
+
     Returns (title, message, priority) or None if not actionable.
     """
     owner_roster_id = ctx.owner_of_player(player_id)
+    role_opening = bool(
+        players is not None and prev_status_pair and current_status_pair
+        and _is_role_opening_change(event_description, prev_status_pair, current_status_pair)
+    )
+
+    backups = []
+    if role_opening and players is not None:
+        backups = find_position_backups(players, ctx, nfl_team, position, player_id)
+
+    free_agent_backup = next((b for b in backups if b["free_agent"]), None)
+
+    owner_label = ctx.manager_label(owner_roster_id) if owner_roster_id is not None else "nobody (free agent)"
+
+    # --- Case 1: a role just opened AND the top healthy backup is unrostered. ---
+    # This is the headline alert type: pick him up before anyone else does.
+    if role_opening and free_agent_backup:
+        title = f"\U0001F7E2 Handcuff opportunity: {free_agent_backup['name']}"
+        message = (
+            f"{player_name} ({event_description}), owned by {owner_label}, just opened up "
+            f"the {position} role on {nfl_team}.\n"
+            f"{free_agent_backup['name']} is next in line by depth chart and is UNROSTERED "
+            f"in your league -- grab him before Declan or anyone else does."
+        )
+        return title, message, PRIORITY_URGENT
+
+    # --- Case 2: role opened, but the top backup is already rostered by someone. ---
+    if role_opening and backups and not free_agent_backup:
+        top = backups[0]
+        title = f"\U0001F7E1 Role opening, backup already owned: {player_name}"
+        message = (
+            f"{player_name} ({event_description}), owned by {owner_label}, just opened up "
+            f"the {position} role on {nfl_team}.\n"
+            f"Next in line is {top['name']}, but he's already rostered by {top['owner_label']} -- "
+            f"no waiver opportunity here, just watch for a trade angle."
+        )
+        return title, message, PRIORITY_WATCH
 
     if owner_roster_id is None:
-        # Free agent -- this is a pure waiver-wire opportunity.
+        # Free agent -- this is a pure waiver-wire opportunity on the player himself.
         title = f"\U0001F7E2 Waiver target: {player_name}"
         message = f"{event_description}\n{player_name} is UNROSTERED in your league -- free agent, first come first served."
         return title, message, PRIORITY_URGENT
@@ -120,7 +217,6 @@ def classify_player_event(ctx: LeagueContext, player_id, player_name, event_desc
         message = f"{event_description}\nThis is on YOUR roster ({config.MANAGER_NAMES.get(config.MY_SLEEPER_USERNAME)}). Check your lineup / IR eligibility."
         return title, message, PRIORITY_URGENT
 
-    owner_label = ctx.manager_label(owner_roster_id)
     tags = []
     if owner_roster_id == ctx.rival_roster_id:
         tags.append("DECLAN-OWNED")
@@ -129,22 +225,26 @@ def classify_player_event(ctx: LeagueContext, player_id, player_name, event_desc
     if owner_roster_id in ctx.record_neighbor_roster_ids:
         tags.append("RECORD NEIGHBOR")
 
-    if not tags:
-        # Rostered by someone unremarkable -- lowest priority, informational only.
+    if not tags and not role_opening:
+        # Minor/unremarkable change (e.g. a news bump with no clear role impact)
+        # on someone else's roster -- lowest priority, informational only.
         title = f"\u26AA Status change: {player_name}"
         message = f"{event_description}\nRostered by {owner_label}. No direct impact on you."
         return title, message, PRIORITY_FYI
 
-    title = f"\U0001F534 {' + '.join(tags)}: {player_name}"
+    tag_str = f"{' + '.join(tags)}: " if tags else ""
+    title = f"\U0001F534 {tag_str}{player_name}"
     message = (
         f"{event_description}\n"
-        f"Owned by {owner_label}. If this opens a backup/role change, check whether the "
-        f"beneficiary is still a free agent -- if so, that's your priority waiver claim."
+        f"Owned by {owner_label}. No clear unrostered beneficiary found yet -- keep an eye on the depth chart."
     )
-    return title, message, PRIORITY_URGENT
+    return title, message, PRIORITY_URGENT if tags else PRIORITY_WATCH
 
 
 def classify_free_agent_trend(player_name, trend_count, position, team):
+    # Lower priority than a rostered-player-impact alert (the "handcuff opportunity"
+    # cases above) -- site-wide trending is a useful early-warning radar but a much
+    # noisier signal than "a specific rostered guy on his team just got hurt."
     title = f"\U0001F4C8 Trending add: {player_name}"
     message = (
         f"{player_name} ({position}, {team}) is spiking across Sleeper "
@@ -152,7 +252,7 @@ def classify_free_agent_trend(player_name, trend_count, position, team):
         f"this is exactly the kind of surge that means news broke somewhere -- move before "
         f"Declan or your opponent does."
     )
-    return title, message, PRIORITY_WATCH
+    return title, message, PRIORITY_FYI
 
 
 def classify_league_transaction(ctx: LeagueContext, txn):
