@@ -261,6 +261,11 @@ ROLE_IMPACT_KEYWORDS = [
     "tore", "torn", "surgery", "out for the season", "out for the year",
     "ruled out", "waived", "released", "carted off", "will miss",
     "placed on injured", "achilles", "concussion protocol", "done for the year",
+    # Added after missing the Josh Jacobs misdemeanor-charges story (ESPN's own
+    # headline said "charged with misdemeanor battery and misdemeanor criminal
+    # damage to property" -- none of the words above matched it):
+    "charged", "misdemeanor", "felony", "battery", "criminal", "indicted",
+    "citation", "cited by police", "legal trouble", "investigation",
 ]
 
 
