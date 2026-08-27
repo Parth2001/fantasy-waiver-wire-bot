@@ -9,6 +9,8 @@ DEFAULTS = {
     "player_status_snapshot": {},   # player_id -> {"status": ..., "injury_status": ..., "news_updated": ...}
     "seen_trending_ids": [],
     "seen_news_ids": [],   # ESPN article ids already checked, for breaking-news mentions
+    "x_account_ids": {},   # username -> numeric X user ID (cached to avoid repeat lookups)
+    "x_last_seen_ids": {},  # username -> newest tweet ID already processed from that account
 }
 
 

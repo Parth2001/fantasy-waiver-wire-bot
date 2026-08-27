@@ -22,6 +22,7 @@ import traceback
 
 import config
 import espn_news
+import x_news
 import sleeper_api
 import state as state_store
 from pushover import send_alert, PRIORITY_FYI, PRIORITY_WATCH, PRIORITY_URGENT
@@ -180,6 +181,74 @@ def check_breaking_news(ctx, st, events, players):
     st["seen_news_ids"] = list(seen)[-500:]
 
 
+def check_x_breaking_news(ctx, st, events, players):
+    """
+    Real-time layer on top of check_breaking_news(): polls a short list of
+    trusted NFL insider accounts on X directly, since ESPN's own writeup of
+    a story can lag the original break by several minutes (confirmed: ESPN's
+    Josh Jacobs article posted ~9 min after Schefter's original tweet, and a
+    later escalation -- surveillance video, suspension talk -- showed up on
+    X well before any ESPN article existed for it).
+
+    Uses since_id per account so a quiet account costs ~0 API reads on a
+    given poll -- X's API is pay-per-read, so this keeps cost bounded.
+    Requires the "x" connector; if it's not connected, xurl calls will fail
+    and this function fails soft (logs and returns) so the rest of the run
+    still completes.
+    """
+    account_ids = st.setdefault("x_account_ids", {})
+    last_seen = st.setdefault("x_last_seen_ids", {})
+
+    name_to_id = {}
+    for pid in ctx.player_owner_roster:
+        p = players.get(pid)
+        if p and p.get("full_name"):
+            name_to_id[normalize_player_name(p["full_name"])] = pid
+
+    # Collapse to one alert per player per run -- e.g. Schefter, Rapoport, and
+    # Pelissero all tweeting about the same Jacobs story within a minute of
+    # each other should still be a single push, not five.
+    flagged_this_run = set()
+
+    for username in x_news.TRACKED_ACCOUNTS:
+        try:
+            user_id = x_news.get_account_id(username, account_ids)
+            if not user_id:
+                continue
+            since_id = last_seen.get(username)
+            posts = x_news.get_new_posts(username, user_id, since_id)
+        except Exception as e:
+            print(f"[x breaking news] fetch failed for {username}: {e}")
+            continue
+
+        if not posts:
+            continue
+
+        # posts come back newest-first; remember the newest ID so next run
+        # only asks for what's genuinely new.
+        last_seen[username] = posts[0]["id"]
+
+        for post in posts:
+            text = post["text"]
+            if not headline_matches_role_impact(text):
+                continue
+
+            text_lower = text.lower()
+            for norm_name, pid in name_to_id.items():
+                # Require the full normalized name as a substring -- avoids
+                # single-last-name false positives across a 16-team league.
+                if norm_name and norm_name in text_lower and pid not in flagged_this_run:
+                    flagged_this_run.add(pid)
+                    player_name = players.get(pid, {}).get("full_name", norm_name)
+                    post_url = f"https://x.com/{username}/status/{post['id']}"
+                    title, message, priority = classify_breaking_news(
+                        ctx, players, pid, player_name,
+                        f"(via @{username} on X) {text}", post_url,
+                    )
+                    events.append((title, message, priority))
+
+
+
 def run_once(st):
     ctx = LeagueContext()
     events = []  # list of (title, message, priority) collected this run
@@ -187,6 +256,7 @@ def run_once(st):
     check_transactions(ctx, st, events)
     check_player_statuses(ctx, st, events)
     check_breaking_news(ctx, st, events, players)
+    check_x_breaking_news(ctx, st, events, players)
     check_trending(ctx, st, events)
     state_store.save_state(st)
 
