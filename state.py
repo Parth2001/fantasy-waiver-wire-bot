@@ -8,6 +8,7 @@ DEFAULTS = {
     "seen_transaction_ids": [],
     "player_status_snapshot": {},   # player_id -> {"status": ..., "injury_status": ..., "news_updated": ...}
     "seen_trending_ids": [],
+    "seen_news_ids": [],   # ESPN article ids already checked, for breaking-news mentions
 }
 
 

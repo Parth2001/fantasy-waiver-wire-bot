@@ -15,27 +15,40 @@ moment something waiver-relevant happens — before you'd normally see it in the
 2. **League transactions** — every add/drop/trade/waiver claim in your 16-team league,
    the second Sleeper processes it. Declan Casey's and your current opponent's moves are
    flagged in red.
-3. **Site-wide trending adds** — Sleeper's `/players/nfl/trending/add` feed shows which
+3. **Breaking news mentions** — Sleeper's own status field only updates *after* something
+   is official, so this closes the gap for rumors and developing stories (suspensions,
+   arrests, season-ending injuries, releases, etc.) that break in real reporting first.
+   Every ~run, the bot checks ESPN's public NFL news feed for headlines mentioning a
+   player rostered anywhere in your league, matched against a role-impact keyword list.
+   If a same-position, same-team free agent backup exists, it's named directly — this is
+   what would have caught something like a Josh Jacobs suspension rumor the night before
+   it became official. Ranked above general trending, since it's a specific, rostered
+   player being reported on, not just aggregate add volume.
+4. **Site-wide trending adds** — Sleeper's `/players/nfl/trending/add` feed shows which
    players are spiking across *all* Sleeper leagues in the last 24h, filtered to players
-   still unrostered in your league. Lower priority than #1 since it's a noisier, more
-   general signal.
+   still unrostered in your league. Lowest priority (silent/FYI) since it's the noisiest,
+   most general signal — a name spiking site-wide doesn't mean anything happened to your
+   league's rosters specifically.
 
 ## Alert priorities (what shows up on your phone)
 
-- 🟢 **Urgent** (Pushover high priority): a role just opened up (injury/IR/inactive) and
-  the top healthy backup on that NFL team is still a free agent in your league — grab him
-  now. Also: a status change on your own roster, or on a player owned by Declan / your
-  current opponent / a manager within one win of your record.
-- 🟡 **Watch** (normal priority): a role opened up but the top backup is already rostered
-  by someone else (no waiver play, just a heads-up), plus general transactions by other
-  managers.
-- ⚪ **FYI** (silent, no push): trending-add noise and status changes with no clear role
-  impact or strategic overlap to you.
+- 🟢 **Urgent** (Pushover high priority): a role just opened up (injury/IR/inactive, *or*
+  a breaking-news report like a suspension rumor) and the top healthy backup on that NFL
+  team is still a free agent in your league — grab him now. Also: a status change on your
+  own roster, or on a player owned by Declan / your current opponent / a manager within
+  one win of your record.
+- 🟡 **Watch** (normal priority): a role opened up (via status change or breaking news)
+  but the top backup is already rostered by someone else (no waiver play, just a
+  heads-up), plus general transactions by other managers.
+- ⚪ **FYI** (silent, no push): site-wide trending-add noise and status changes with no
+  clear role impact or strategic overlap to you.
 
-This matches your priority: you want to know the instant a *rostered* player's injury
-creates a grabbable backup, not just that some random player is trending. Declan Casey
-and your scheduled opponent still get extra tags since they're historically fast movers,
-but the handcuff lookup itself runs for all 16 rosters equally.
+This matches your priority: you want to know the instant a *rostered* player's injury (or
+a credible report of one) creates a grabbable backup, not just that some random player is
+trending site-wide. Breaking-news mentions and handcuff opportunities always outrank
+general trending in both push priority and where they sort in a digest message. Declan
+Casey and your scheduled opponent still get extra tags since they're historically fast
+movers, but the handcuff lookup itself runs for all 16 rosters equally.
 
 ## Setup — GitHub Actions (recommended, zero building, zero hosting cost)
 

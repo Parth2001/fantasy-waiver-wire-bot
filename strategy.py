@@ -241,6 +241,72 @@ def classify_player_event(ctx: LeagueContext, player_id, player_name, event_desc
     return title, message, PRIORITY_URGENT if tags else PRIORITY_WATCH
 
 
+_NAME_SUFFIXES = (" jr", " sr", " ii", " iii", " iv", " v")
+
+
+def normalize_player_name(name):
+    """Sleeper and ESPN don't always agree on suffixes (Sleeper: 'Calvin
+    Austin', ESPN: 'Calvin Austin III') -- strip trailing Jr/Sr/II/III/IV/V
+    and punctuation so name-matching across the two sources actually works."""
+    n = (name or "").lower().strip().replace(".", "").replace(",", "")
+    for suffix in _NAME_SUFFIXES:
+        if n.endswith(suffix):
+            n = n[: -len(suffix)].strip()
+            break
+    return n
+
+
+ROLE_IMPACT_KEYWORDS = [
+    "suspend", "suspension", "arrest", "domestic", "injured reserve", " ir ",
+    "tore", "torn", "surgery", "out for the season", "out for the year",
+    "ruled out", "waived", "released", "carted off", "will miss",
+    "placed on injured", "achilles", "concussion protocol", "done for the year",
+]
+
+
+def headline_matches_role_impact(text):
+    text = f" {text.lower()} "
+    return any(kw in text for kw in ROLE_IMPACT_KEYWORDS)
+
+
+def classify_breaking_news(ctx: LeagueContext, players, player_id, player_name,
+                            headline, article_url):
+    """
+    A player mentioned in real NFL news copy (not yet reflected in Sleeper's
+    structured status field) alongside a role-impact keyword -- e.g. a
+    suspension-is-coming report, before the league office makes it official.
+    This is the exact "rumor should still alert me" gap a pure status-diff
+    approach misses.
+    """
+    p = players.get(player_id, {})
+    nfl_team = p.get("team")
+    position = p.get("position")
+    owner_roster_id = ctx.owner_of_player(player_id)
+    owner_label = ctx.manager_label(owner_roster_id) if owner_roster_id is not None else "nobody (free agent)"
+
+    backups = find_position_backups(players, ctx, nfl_team, position, player_id)
+    free_agent_backup = next((b for b in backups if b["free_agent"]), None)
+
+    if free_agent_backup:
+        title = f"\U0001F7E2 Breaking news handcuff: {free_agent_backup['name']}"
+        message = (
+            f"\U0001F4F0 {headline}\n"
+            f"{player_name} (owned by {owner_label}) is named in breaking news that could open "
+            f"up the {position} role on {nfl_team} -- not yet reflected in official status, "
+            f"but {free_agent_backup['name']} is next in line and still UNROSTERED. "
+            f"Grab him now before the news fully breaks league-wide.\n{article_url}"
+        )
+        return title, message, PRIORITY_URGENT
+
+    title = f"\U0001F4F0 Breaking news: {player_name}"
+    message = (
+        f"{headline}\n"
+        f"{player_name} (owned by {owner_label}) is named in a report that could affect his role. "
+        f"No clear unrostered beneficiary yet -- worth a quick look at his team's depth chart.\n{article_url}"
+    )
+    return title, message, PRIORITY_WATCH
+
+
 def classify_free_agent_trend(player_name, trend_count, position, team):
     # Lower priority than a rostered-player-impact alert (the "handcuff opportunity"
     # cases above) -- site-wide trending is a useful early-warning radar but a much

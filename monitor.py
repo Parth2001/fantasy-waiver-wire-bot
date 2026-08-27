@@ -21,6 +21,7 @@ import time
 import traceback
 
 import config
+import espn_news
 import sleeper_api
 import state as state_store
 from pushover import send_alert, PRIORITY_FYI, PRIORITY_WATCH, PRIORITY_URGENT
@@ -29,6 +30,9 @@ from strategy import (
     classify_player_event,
     classify_free_agent_trend,
     classify_league_transaction,
+    classify_breaking_news,
+    headline_matches_role_impact,
+    normalize_player_name,
 )
 
 
@@ -125,11 +129,64 @@ def check_trending(ctx, st, events):
     st["seen_trending_ids"] = list(seen)[-500:]
 
 
+def check_breaking_news(ctx, st, events, players):
+    """
+    Sleeper's own data only tells you a player's status AFTER it's official.
+    ESPN's news feed has the actual reporting -- e.g. a suspension-is-coming
+    story -- often hours or days before that. This closes that gap for any
+    player currently rostered somewhere in your league, so a role-impact
+    report shows up as an alert even before Sleeper's status field catches up.
+    """
+    try:
+        articles = espn_news.get_recent_news(limit=50)
+    except Exception as e:
+        print(f"[breaking news] fetch failed: {e}")
+        return
+
+    seen = set(st["seen_news_ids"])
+    # Only match against players actually rostered in your league -- this is
+    # both the point of the bot and what keeps common-name false positives down.
+    # Names are normalized (suffix/punctuation-insensitive) since Sleeper and
+    # ESPN don't always agree on how a player's name is formatted.
+    name_to_id = {}
+    for pid in ctx.player_owner_roster:
+        p = players.get(pid)
+        if p and p.get("full_name"):
+            name_to_id[normalize_player_name(p["full_name"])] = pid
+
+    for article in articles:
+        article_id = article.get("id")
+        if not article_id or article_id in seen:
+            continue
+        seen.add(article_id)
+
+        headline = article.get("headline") or ""
+        description = article.get("description") or ""
+        combined_text = f"{headline} {description}"
+        if not headline_matches_role_impact(combined_text):
+            continue
+
+        for name in espn_news.article_athlete_names(article):
+            pid = name_to_id.get(normalize_player_name(name))
+            if not pid:
+                continue
+            player_name = players.get(pid, {}).get("full_name", name)
+            article_url = (article.get("links") or {}).get("web", {}).get("href", "")
+            title, message, priority = classify_breaking_news(
+                ctx, players, pid, player_name, headline, article_url
+            )
+            events.append((title, message, priority))
+
+    st["seen_news_ids"] = list(seen)[-500:]
+
+
 def run_once(st):
     ctx = LeagueContext()
     events = []  # list of (title, message, priority) collected this run
+    players = sleeper_api.get_all_players(max_age_hours=config.PLAYER_DB_REFRESH_HOURS)
     check_transactions(ctx, st, events)
     check_player_statuses(ctx, st, events)
+    check_breaking_news(ctx, st, events, players)
     check_trending(ctx, st, events)
     state_store.save_state(st)
 
