@@ -23,7 +23,7 @@ import traceback
 import config
 import sleeper_api
 import state as state_store
-from pushover import send_alert
+from pushover import send_alert, PRIORITY_FYI, PRIORITY_WATCH, PRIORITY_URGENT
 from strategy import (
     LeagueContext,
     classify_player_event,
@@ -32,7 +32,7 @@ from strategy import (
 )
 
 
-def check_transactions(ctx, st):
+def check_transactions(ctx, st, events):
     new_seen = set(st["seen_transaction_ids"])
     try:
         txns = sleeper_api.get_transactions(config.LEAGUE_ID, ctx.week)
@@ -47,11 +47,11 @@ def check_transactions(ctx, st):
             continue
         new_seen.add(txn_id)
         title, message, priority = classify_league_transaction(ctx, txn)
-        send_alert(title, message, priority=priority)
+        events.append((title, message, priority))
     st["seen_transaction_ids"] = list(new_seen)[-500:]  # keep the file small
 
 
-def check_player_statuses(ctx, st):
+def check_player_statuses(ctx, st, events):
     players = sleeper_api.get_all_players(max_age_hours=config.PLAYER_DB_REFRESH_HOURS)
     snapshot = st["player_status_snapshot"]
     rostered_ids = set(ctx.player_owner_roster.keys())
@@ -86,12 +86,12 @@ def check_player_statuses(ctx, st):
         result = classify_player_event(ctx, pid, name, "; ".join(changes))
         if result:
             title, message, priority = result
-            send_alert(title, message, priority=priority)
+            events.append((title, message, priority))
 
     st["player_status_snapshot"] = snapshot
 
 
-def check_trending(ctx, st):
+def check_trending(ctx, st, events):
     try:
         trending = sleeper_api.get_trending_players(add_or_drop="add", lookback_hours=24, limit=25)
     except Exception as e:
@@ -113,17 +113,39 @@ def check_trending(ctx, st):
         title, message, priority = classify_free_agent_trend(
             name, entry.get("count", 0), p.get("position", "?"), p.get("team", "FA")
         )
-        send_alert(title, message, priority=priority)
+        events.append((title, message, priority))
 
     st["seen_trending_ids"] = list(seen)[-500:]
 
 
 def run_once(st):
     ctx = LeagueContext()
-    check_transactions(ctx, st)
-    check_player_statuses(ctx, st)
-    check_trending(ctx, st)
+    events = []  # list of (title, message, priority) collected this run
+    check_transactions(ctx, st, events)
+    check_player_statuses(ctx, st, events)
+    check_trending(ctx, st, events)
     state_store.save_state(st)
+
+    if not events:
+        return
+
+    # Send ONE consolidated push per run instead of one per item -- this matters
+    # most on the very first run (no prior state), where dozens of items can be
+    # "new" simultaneously. Sort so urgent stuff appears first within the digest.
+    order = {PRIORITY_URGENT: 0, PRIORITY_WATCH: 1, PRIORITY_FYI: 2}
+    events.sort(key=lambda e: order.get(e[2], 1))
+    max_priority = max(e[2] for e in events)
+
+    if len(events) == 1:
+        title, message, _ = events[0]
+        send_alert(title, message, priority=max_priority)
+    else:
+        title = f"Waiver watch: {len(events)} updates"
+        message = "\n\n".join(f"\u2022 {t}: {m}" for t, m, _ in events)
+        # Pushover messages are capped at 1024 chars -- trim gracefully.
+        if len(message) > 1000:
+            message = message[:997] + "..."
+        send_alert(title, message, priority=max_priority)
 
 
 def main():
