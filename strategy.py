@@ -116,11 +116,13 @@ def _is_role_opening_change(event_description, prev_status_pair, current_status_
     return False
 
 
-def find_position_backups(players, ctx, nfl_team, position, injured_player_id, limit=2):
+def find_position_backups(players, ctx, nfl_team, position, injured_player_id, limit=3):
     """Same NFL team + same position, healthy, excluding the injured player --
     sorted by depth chart order (or search rank if depth chart data is missing).
     This is the actual 'who benefits' lookup, so alerts can name the handcuff
-    instead of just saying 'check for a beneficiary'."""
+    instead of just saying 'check for a beneficiary'. Returns up to `limit`
+    candidates (default 3) so callers can look past the #1 guy if he's
+    already owned by someone else in the league."""
     if not nfl_team or position not in BACKUP_RELEVANT_POSITIONS:
         return []
     candidates = []
@@ -154,6 +156,24 @@ def find_position_backups(players, ctx, nfl_team, position, injured_player_id, l
     return results
 
 
+def _pickup_target(backups):
+    """Given backups sorted by depth chart (top candidate first), figure out
+    who the actual waiver-wire grab is. If the #1 guy is a free agent, he's
+    the target. If he's already rostered by someone else, keep looking down
+    the list for the first free agent -- that's still a real pickup
+    opportunity, it's just not the very top of the depth chart. Returns
+    (top, top_is_free_agent, grab_target) where grab_target is the backup to
+    actually recommend claiming (or None if everyone we checked is owned).
+    """
+    if not backups:
+        return None, False, None
+    top = backups[0]
+    if top["free_agent"]:
+        return top, True, top
+    grab_target = next((b for b in backups[1:] if b["free_agent"]), None)
+    return top, False, grab_target
+
+
 def classify_player_event(ctx: LeagueContext, player_id, player_name, event_description,
                            players=None, nfl_team=None, position=None,
                            prev_status_pair=None, current_status_pair=None):
@@ -178,31 +198,47 @@ def classify_player_event(ctx: LeagueContext, player_id, player_name, event_desc
     if role_opening and players is not None:
         backups = find_position_backups(players, ctx, nfl_team, position, player_id)
 
-    free_agent_backup = next((b for b in backups if b["free_agent"]), None)
+    top, top_is_free_agent, grab_target = _pickup_target(backups)
 
     owner_label = ctx.manager_label(owner_roster_id) if owner_roster_id is not None else "nobody (free agent)"
 
-    # --- Case 1: a role just opened AND the top healthy backup is unrostered. ---
-    # This is the headline alert type: pick him up before anyone else does.
-    if role_opening and free_agent_backup:
-        title = f"\U0001F7E2 Handcuff opportunity: {free_agent_backup['name']}"
+    # --- Case 1: a role just opened AND there's a real pickup target. ---
+    # This fires whether the very top backup is unrostered, or he's already
+    # owned and the NEXT guy down the depth chart is the actual free agent to
+    # grab -- either way, always name who's #1 (and his owner, if any) so you
+    # know the full picture, not just the recommended claim.
+    if role_opening and grab_target:
+        title = f"\U0001F7E2 Handcuff opportunity: {grab_target['name']}"
+        if top_is_free_agent:
+            backup_line = (
+                f"{grab_target['name']} is next in line by depth chart and is UNROSTERED "
+                f"in your league -- grab him before Declan or anyone else does."
+            )
+        else:
+            backup_line = (
+                f"Top backup {top['name']} is already rostered by {top['owner_label']}, but "
+                f"{grab_target['name']} is next behind him and is still UNROSTERED -- "
+                f"grab him before Declan or anyone else does."
+            )
         message = (
             f"{player_name} ({event_description}), owned by {owner_label}, just opened up "
-            f"the {position} role on {nfl_team}.\n"
-            f"{free_agent_backup['name']} is next in line by depth chart and is UNROSTERED "
-            f"in your league -- grab him before Declan or anyone else does."
+            f"the {position} role on {nfl_team}.\n{backup_line}"
         )
         return title, message, PRIORITY_URGENT
 
-    # --- Case 2: role opened, but the top backup is already rostered by someone. ---
-    if role_opening and backups and not free_agent_backup:
-        top = backups[0]
-        title = f"\U0001F7E1 Role opening, backup already owned: {player_name}"
+    # --- Case 2: role opened, but every backup candidate we checked is already owned. ---
+    if role_opening and top and not grab_target:
+        title = f"\U0001F7E1 Role opening, backups already owned: {player_name}"
+        others = [b for b in backups[1:] if not b["free_agent"]]
+        others_note = (
+            f" Also already rostered: " + ", ".join(f"{b['name']} ({b['owner_label']})" for b in others) + "."
+            if others else ""
+        )
         message = (
             f"{player_name} ({event_description}), owned by {owner_label}, just opened up "
             f"the {position} role on {nfl_team}.\n"
             f"Next in line is {top['name']}, but he's already rostered by {top['owner_label']} -- "
-            f"no waiver opportunity here, just watch for a trade angle."
+            f"no waiver opportunity here, just watch for a trade angle.{others_note}"
         )
         return title, message, PRIORITY_WATCH
 
@@ -290,18 +326,45 @@ def classify_breaking_news(ctx: LeagueContext, players, player_id, player_name,
     owner_label = ctx.manager_label(owner_roster_id) if owner_roster_id is not None else "nobody (free agent)"
 
     backups = find_position_backups(players, ctx, nfl_team, position, player_id)
-    free_agent_backup = next((b for b in backups if b["free_agent"]), None)
+    top, top_is_free_agent, grab_target = _pickup_target(backups)
 
-    if free_agent_backup:
-        title = f"\U0001F7E2 Breaking news handcuff: {free_agent_backup['name']}"
+    if grab_target:
+        title = f"\U0001F7E2 Breaking news handcuff: {grab_target['name']}"
+        if top_is_free_agent:
+            backup_line = (
+                f"{grab_target['name']} is next in line and still UNROSTERED. "
+                f"Grab him now before the news fully breaks league-wide."
+            )
+        else:
+            backup_line = (
+                f"Top backup {top['name']} is already rostered by {top['owner_label']}, but "
+                f"{grab_target['name']} is next behind him and is still UNROSTERED. "
+                f"Grab him now before the news fully breaks league-wide."
+            )
         message = (
             f"\U0001F4F0 {headline}\n"
             f"{player_name} (owned by {owner_label}) is named in breaking news that could open "
-            f"up the {position} role on {nfl_team} -- not yet reflected in official status, "
-            f"but {free_agent_backup['name']} is next in line and still UNROSTERED. "
-            f"Grab him now before the news fully breaks league-wide.\n{article_url}"
+            f"up the {position} role on {nfl_team} -- not yet reflected in official status. "
+            f"{backup_line}\n{article_url}"
         )
         return title, message, PRIORITY_URGENT
+
+    if top:
+        # Every candidate we checked is already owned -- no live waiver opportunity,
+        # but still worth knowing who has the depth-chart edge and who owns them.
+        others = [b for b in backups[1:] if not b["free_agent"]]
+        others_note = (
+            " Also already rostered: " + ", ".join(f"{b['name']} ({b['owner_label']})" for b in others) + "."
+            if others else ""
+        )
+        title = f"\U0001F4F0 Breaking news: {player_name}"
+        message = (
+            f"{headline}\n"
+            f"{player_name} (owned by {owner_label}) is named in a report that could affect his role. "
+            f"Next in line, {top['name']}, is already rostered by {top['owner_label']} -- "
+            f"no waiver opportunity yet, just watch for a trade angle.{others_note}\n{article_url}"
+        )
+        return title, message, PRIORITY_WATCH
 
     title = f"\U0001F4F0 Breaking news: {player_name}"
     message = (
