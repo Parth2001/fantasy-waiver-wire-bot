@@ -26,6 +26,7 @@ TRACKED_ACCOUNTS = [
     "RapSheet",       # NFL Network (Ian Rapoport)
     "TomPelissero",   # NFL Network
     "FieldYates",     # ESPN fantasy/NFL
+    "MikeGarafolo",   # NFL Network -- routinely ranked alongside Rapoport/Schefter/Pelissero
 ]
 
 
