@@ -32,6 +32,14 @@ jobs:
         env:
           PUSHOVER_APP_TOKEN: ${{ secrets.PUSHOVER_APP_TOKEN }}
           PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
+          # Optional: your own X (Twitter) API App-only Bearer Token, from the
+          # "Keys and Tokens" tab of your X developer app (a different field
+          # than the OAuth 2.0 Client ID/Secret used elsewhere). Add it as a
+          # repo secret named X_BEARER_TOKEN to enable the insider-tweet
+          # breaking-news check on this fast 5-minute schedule. If this secret
+          # isn't set, x_news.py just logs a skip and every other check still
+          # runs normally.
+          X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
         run: python monitor.py
 
       - name: Save updated state back to the repo
