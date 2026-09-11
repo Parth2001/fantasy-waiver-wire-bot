@@ -57,7 +57,7 @@ def check_transactions(ctx, st, events):
 
 
 def check_player_statuses(ctx, st, events):
-    players = sleeper_api.get_all_players(max_age_hours=config.PLAYER_DB_REFRESH_HOURS)
+    players = sleeper_api.get_all_players(max_age_hours=config.PLAYER_DB_REFRESH_HOURS, state=st)
     snapshot = st["player_status_snapshot"]
     rostered_ids = set(ctx.player_owner_roster.keys())
 
@@ -109,7 +109,7 @@ def check_trending(ctx, st, events):
     except Exception as e:
         print(f"[trending] fetch failed: {e}")
         return
-    players = sleeper_api.get_all_players(max_age_hours=config.PLAYER_DB_REFRESH_HOURS)
+    players = sleeper_api.get_all_players(max_age_hours=config.PLAYER_DB_REFRESH_HOURS, state=st)
     seen = set(st["seen_trending_ids"])
 
     for entry in trending:
@@ -252,7 +252,7 @@ def check_x_breaking_news(ctx, st, events, players):
 def run_once(st):
     ctx = LeagueContext()
     events = []  # list of (title, message, priority) collected this run
-    players = sleeper_api.get_all_players(max_age_hours=config.PLAYER_DB_REFRESH_HOURS)
+    players = sleeper_api.get_all_players(max_age_hours=config.PLAYER_DB_REFRESH_HOURS, state=st)
     check_transactions(ctx, st, events)
     check_player_statuses(ctx, st, events)
     check_breaking_news(ctx, st, events, players)

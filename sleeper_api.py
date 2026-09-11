@@ -80,12 +80,36 @@ def get_trending_players(add_or_drop="add", lookback_hours=24, limit=50):
     )
 
 
-def get_all_players(force_refresh=False, max_age_hours=12):
+def get_all_players(force_refresh=False, max_age_hours=12, state=None):
     """
     Full NFL player dictionary (player_id -> {full_name, team, position,
     status, injury_status, news_updated, ...}). This is a big file (~5-8MB),
     so it is cached locally and only re-downloaded every max_age_hours.
+
+    IMPORTANT: staleness is tracked via a timestamp persisted in state.json
+    (state["players_cache_fetched_at"]), NOT via the cache file's filesystem
+    mtime. On GitHub Actions, actions/checkout resets every file's mtime to
+    the moment of checkout on every single run -- so an mtime-based check
+    always sees the file as "just created" and never re-fetches, silently
+    freezing all injury/status data at whatever was last fetched. (This bot
+    ran for 2+ weeks on a cache from Aug 27 before this was caught.) A
+    caller that doesn't pass `state` falls back to the old mtime check for
+    non-bot local usage, but the bot itself must always pass state.
     """
+    if state is not None:
+        fetched_at = state.get("players_cache_fetched_at", 0)
+        age_hours = (time.time() - fetched_at) / 3600
+        if not force_refresh and age_hours < max_age_hours and os.path.exists(PLAYERS_CACHE_FILE):
+            with open(PLAYERS_CACHE_FILE, "r") as f:
+                return json.load(f)
+
+        data = _get(f"{BASE}/players/nfl")
+        with open(PLAYERS_CACHE_FILE, "w") as f:
+            json.dump(data, f)
+        state["players_cache_fetched_at"] = time.time()
+        return data
+
+    # Legacy path (no state passed) -- kept only for ad-hoc local scripts.
     if not force_refresh and os.path.exists(PLAYERS_CACHE_FILE):
         age_hours = (time.time() - os.path.getmtime(PLAYERS_CACHE_FILE)) / 3600
         if age_hours < max_age_hours:

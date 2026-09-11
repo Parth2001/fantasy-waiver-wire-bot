@@ -11,6 +11,7 @@ DEFAULTS = {
     "seen_news_ids": [],   # ESPN article ids already checked, for breaking-news mentions
     "x_account_ids": {},   # username -> numeric X user ID (cached to avoid repeat lookups)
     "x_last_seen_ids": {},  # username -> newest tweet ID already processed from that account
+    "players_cache_fetched_at": 0,  # epoch seconds of last real players_cache.json refresh
 }
 
 
