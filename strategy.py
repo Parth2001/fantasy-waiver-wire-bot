@@ -242,15 +242,24 @@ def classify_player_event(ctx: LeagueContext, player_id, player_name, event_desc
         )
         return title, message, PRIORITY_WATCH
 
-    if owner_roster_id is None:
-        # Free agent -- this is a pure waiver-wire opportunity on the player himself.
-        title = f"\U0001F7E2 Waiver target: {player_name}"
-        message = f"{event_description}\n{player_name} is UNROSTERED in your league -- free agent, first come first served."
-        return title, message, PRIORITY_URGENT
+    # --- Scope (narrowed 2026-09-16 per explicit user request -- "only alert
+    # me for injuries and direct handcuff opportunities"): everything below
+    # this point requires role_opening == True. A player merely getting
+    # healthier, a pure news_updated bump, or any other non-injury change is
+    # NOT alertable regardless of who owns the player -- not even on my own
+    # roster or a rival/opponent's roster. Cases 1 and 2 above already only
+    # fire when role_opening is True; this covers the remaining case where
+    # role_opening is True but no backup candidates exist at all (e.g. a K or
+    # DEF, or an unknown NFL team) -- still a real injury, just no handcuff to
+    # name.
+    if not role_opening:
+        title = f"\u26AA Status change: {player_name}"
+        message = f"{event_description}\nRostered by {owner_label}. Not an injury/role-opening change -- no alert needed."
+        return title, message, PRIORITY_FYI
 
     if owner_roster_id == ctx.my_roster_id:
         title = f"\U0001F535 Your player: {player_name}"
-        message = f"{event_description}\nThis is on YOUR roster ({config.MANAGER_NAMES.get(config.MY_SLEEPER_USERNAME)}). Check your lineup / IR eligibility."
+        message = f"{event_description}\nThis is on YOUR roster ({config.MANAGER_NAMES.get(config.MY_SLEEPER_USERNAME)}). Check your lineup / IR eligibility. No handcuff candidates found for this position/team."
         return title, message, PRIORITY_URGENT
 
     tags = []
@@ -261,15 +270,8 @@ def classify_player_event(ctx: LeagueContext, player_id, player_name, event_desc
     if owner_roster_id in ctx.record_neighbor_roster_ids:
         tags.append("RECORD NEIGHBOR")
 
-    if not tags and not role_opening:
-        # Minor/unremarkable change (e.g. a news bump with no clear role impact)
-        # on someone else's roster -- lowest priority, informational only.
-        title = f"\u26AA Status change: {player_name}"
-        message = f"{event_description}\nRostered by {owner_label}. No direct impact on you."
-        return title, message, PRIORITY_FYI
-
     tag_str = f"{' + '.join(tags)}: " if tags else ""
-    title = f"\U0001F534 {tag_str}{player_name}"
+    title = f"\U0001F534 {tag_str}Injury: {player_name}"
     message = (
         f"{event_description}\n"
         f"Owned by {owner_label}. No clear unrostered beneficiary found yet -- keep an eye on the depth chart."

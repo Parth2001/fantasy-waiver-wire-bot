@@ -298,11 +298,17 @@ def run_once(st):
     ctx = LeagueContext()
     events = []  # list of (title, message, priority) collected this run
     players = sleeper_api.get_all_players(max_age_hours=config.PLAYER_DB_REFRESH_HOURS, state=st)
-    check_transactions(ctx, st, events)
+    # Scope narrowed 2026-09-16 per explicit user request -- "only alert me
+    # for injuries and direct handcuff opportunities". League transactions
+    # (check_transactions) and site-wide trending adds (check_trending) are
+    # neither -- they're left defined above but no longer wired into the run,
+    # so they never produce events or state churn. Only the two injury-signal
+    # paths remain: the structured Sleeper status diff and the two
+    # breaking-news feeds (ESPN + X), both of which already gate on a real
+    # role-opening change and run the handcuff lookup.
     check_player_statuses(ctx, st, events)
     check_breaking_news(ctx, st, events, players)
     check_x_breaking_news(ctx, st, events, players)
-    check_trending(ctx, st, events)
     state_store.save_state(st)
 
     if not events:
