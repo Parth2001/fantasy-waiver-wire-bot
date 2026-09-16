@@ -37,6 +37,39 @@ from strategy import (
 )
 
 
+# How long a single real-world fact stays "already alerted" before the same
+# player/status pair is allowed to alert again. Set well above the bot's ~5min
+# poll interval so structured-status-diff, ESPN breaking news, and X breaking
+# news -- which all independently detect the same event -- only push once.
+ALERT_DEDUP_COOLDOWN_HOURS = 24
+
+
+def _should_suppress_duplicate(st, player_id, status_pair):
+    """True if this exact (player_id, status_pair) combo already triggered an
+    alert within the cooldown window, regardless of which check found it.
+    A genuinely NEW status_pair (e.g. Questionable -> Out -> IR) still alerts
+    each time since the pair itself changed -- this only collapses the case
+    where two different detection paths report the identical fact.
+    """
+    recent = st.setdefault("alerted_players_recent", {})
+    now = time.time()
+    entry = recent.get(player_id)
+    pair = list(status_pair)
+    suppress = bool(
+        entry
+        and (now - entry.get("ts", 0)) < ALERT_DEDUP_COOLDOWN_HOURS * 3600
+        and list(entry.get("status_pair") or []) == pair
+    )
+    if not suppress:
+        recent[player_id] = {"ts": now, "status_pair": pair}
+    # Prune stale entries so the state file doesn't grow forever.
+    cutoff = now - 7 * 24 * 3600
+    for pid in list(recent.keys()):
+        if recent[pid].get("ts", 0) < cutoff:
+            del recent[pid]
+    return suppress
+
+
 def check_transactions(ctx, st, events):
     new_seen = set(st["seen_transaction_ids"])
     try:
@@ -96,7 +129,9 @@ def check_player_statuses(ctx, st, events):
             prev_status_pair=(prev["status"], prev["injury_status"]),
             current_status_pair=(current["status"], current["injury_status"]),
         )
-        if result:
+        if result and not _should_suppress_duplicate(
+            st, pid, (current["status"], current["injury_status"])
+        ):
             title, message, priority = result
             events.append((title, message, priority))
 
@@ -173,6 +208,11 @@ def check_breaking_news(ctx, st, events, players):
                 continue
             player_name = players.get(pid, {}).get("full_name", name)
             article_url = (article.get("links") or {}).get("web", {}).get("href", "")
+            live = players.get(pid, {})
+            if _should_suppress_duplicate(
+                st, pid, (live.get("status"), live.get("injury_status"))
+            ):
+                continue
             title, message, priority = classify_breaking_news(
                 ctx, players, pid, player_name, headline, article_url
             )
@@ -239,6 +279,11 @@ def check_x_breaking_news(ctx, st, events, players):
                 # single-last-name false positives across a 16-team league.
                 if norm_name and norm_name in text_lower and pid not in flagged_this_run:
                     flagged_this_run.add(pid)
+                    live = players.get(pid, {})
+                    if _should_suppress_duplicate(
+                        st, pid, (live.get("status"), live.get("injury_status"))
+                    ):
+                        continue
                     player_name = players.get(pid, {}).get("full_name", norm_name)
                     post_url = f"https://x.com/{username}/status/{post['id']}"
                     title, message, priority = classify_breaking_news(
