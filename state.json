@@ -905,6 +905,11 @@
       "status": "Active",
       "injury_status": null,
       "news_updated": 1790084758236
+    },
+    "3634": {
+      "status": "Active",
+      "injury_status": null,
+      "news_updated": 1790091658979
     }
   },
   "seen_trending_ids": [
@@ -1181,8 +1186,8 @@
     49896947,
     49993204,
     49980918,
-    49862136,
     49905144,
+    49862136,
     49796601,
     49872379,
     49786366,
