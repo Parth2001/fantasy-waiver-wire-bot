@@ -1054,8 +1054,8 @@
     "2227"
   ],
   "seen_news_ids": [
-    50009540,
     50021828,
+    50009540,
     49868230,
     49757636,
     49757640,
@@ -1565,9 +1565,9 @@
   "x_last_seen_ids": {
     "AdamSchefter": "2107458656161673397",
     "RapSheet": "2107456341606269287",
-    "TomPelissero": "2107239704630329854",
+    "TomPelissero": "2107479419371823229",
     "FieldYates": "2107470912240910447",
-    "MikeGarafolo": "2107473230827278532"
+    "MikeGarafolo": "2107479423012479123"
   },
   "players_cache_fetched_at": 1791271829.5059142,
   "alerted_players_recent": {
