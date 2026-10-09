@@ -409,7 +409,7 @@
     "13305": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1789401003707
+      "news_updated": 1791231328161
     },
     "2133": {
       "status": "Active",
@@ -884,7 +884,7 @@
     "12509": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1790043054682
+      "news_updated": 1791300944964
     },
     "10218": {
       "status": "Active",
@@ -1078,9 +1078,9 @@
     50077145,
     49956313,
     49941977,
-    49999325,
-    49898972,
     49933789,
+    49898972,
+    49999325,
     49993184,
     49991137,
     49956322,
@@ -2786,6 +2786,20 @@
       "status_pair": [
         "Active",
         "NA"
+      ]
+    },
+    "13305": {
+      "ts": 1791512118.4006894,
+      "status_pair": [
+        "Active",
+        null
+      ]
+    },
+    "12509": {
+      "ts": 1791512118.4008067,
+      "status_pair": [
+        "Active",
+        null
       ]
     }
   }
