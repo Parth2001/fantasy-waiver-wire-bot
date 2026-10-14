@@ -1005,6 +1005,31 @@
       "status": "Active",
       "injury_status": null,
       "news_updated": 1791820229897
+    },
+    "3214": {
+      "status": "Active",
+      "injury_status": null,
+      "news_updated": 1791857105286
+    },
+    "96": {
+      "status": "Active",
+      "injury_status": null,
+      "news_updated": 1791859807202
+    },
+    "13274": {
+      "status": "Active",
+      "injury_status": null,
+      "news_updated": 1791838804015
+    },
+    "9480": {
+      "status": "Active",
+      "injury_status": null,
+      "news_updated": 1791818428050
+    },
+    "12542": {
+      "status": "Active",
+      "injury_status": null,
+      "news_updated": 1791941433036
     }
   },
   "seen_trending_ids": [
@@ -1089,7 +1114,6 @@
     "2227"
   ],
   "seen_news_ids": [
-    49966574,
     49753583,
     49755632,
     50013680,
@@ -1099,12 +1123,12 @@
     50028021,
     49980918,
     50085359,
-    49905144,
-    50023929,
     49862136,
-    49872379,
     49796601,
+    49905144,
     50054651,
+    50023929,
+    49872379,
     50056700,
     50114045,
     49786366,
@@ -1422,6 +1446,7 @@
     49968972,
     50063176,
     50104142,
+    50173775,
     50118480,
     49737553,
     49731410,
@@ -1598,10 +1623,10 @@
     "MikeGarafolo": "12513132"
   },
   "x_last_seen_ids": {
-    "AdamSchefter": "2110175084430098885",
-    "RapSheet": "2110189119271772269",
+    "AdamSchefter": "2110329616904630368",
+    "RapSheet": "2110337564137988568",
     "TomPelissero": "2110175010186768876",
-    "FieldYates": "2110101711528645030",
+    "FieldYates": "2110338405662109948",
     "MikeGarafolo": "2110174567650275750"
   },
   "players_cache_fetched_at": 1791959729.1780696,
@@ -2160,7 +2185,7 @@
       ]
     },
     "11566": {
-      "ts": 1791788005.4094846,
+      "ts": 1791980470.886831,
       "status_pair": [
         "Active",
         null
@@ -2178,13 +2203,6 @@
       "status_pair": [
         "Active",
         null
-      ]
-    },
-    "12492": {
-      "ts": 1791360044.327655,
-      "status_pair": [
-        "Active",
-        "Doubtful"
       ]
     },
     "4881": {
@@ -2626,13 +2644,6 @@
       "status_pair": [
         "Inactive",
         "IR"
-      ]
-    },
-    "4018": {
-      "ts": 1791360044.3221486,
-      "status_pair": [
-        "Active",
-        ""
       ]
     },
     "8154": {
