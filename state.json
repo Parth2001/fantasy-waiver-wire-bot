@@ -1648,11 +1648,11 @@
     "MikeGarafolo": "12513132"
   },
   "x_last_seen_ids": {
-    "AdamSchefter": "2111552119400513774",
-    "RapSheet": "2111550203895693603",
+    "AdamSchefter": "2111568370638450768",
+    "RapSheet": "2111583410783473788",
     "TomPelissero": "2111552248346235228",
     "FieldYates": "2111547124999496149",
-    "MikeGarafolo": "2111551346864509288"
+    "MikeGarafolo": "2111555648810897765"
   },
   "players_cache_fetched_at": 1792259939.4567769,
   "alerted_players_recent": {
@@ -2417,13 +2417,6 @@
       "status_pair": [
         "Active",
         "Out"
-      ]
-    },
-    "4177": {
-      "ts": 1791667820.9327037,
-      "status_pair": [
-        "Inactive",
-        "IR"
       ]
     },
     "9484": {
