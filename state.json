@@ -269,7 +269,7 @@
     "8132": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1792032910229
+      "news_updated": 1792220440712
     },
     "9487": {
       "status": "Active",
@@ -1648,7 +1648,7 @@
     "MikeGarafolo": "12513132"
   },
   "x_last_seen_ids": {
-    "AdamSchefter": "2111568370638450768",
+    "AdamSchefter": "2111605825483763751",
     "RapSheet": "2111583410783473788",
     "TomPelissero": "2111552248346235228",
     "FieldYates": "2111547124999496149",
@@ -2322,7 +2322,7 @@
       ]
     },
     "8132": {
-      "ts": 1792065808.0108974,
+      "ts": 1792282574.6755884,
       "status_pair": [
         "Active",
         null
