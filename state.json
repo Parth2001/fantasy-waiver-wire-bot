@@ -254,7 +254,7 @@
     "13276": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1788490217169
+      "news_updated": 1792442710189
     },
     "9226": {
       "status": "Inactive",
@@ -283,8 +283,8 @@
     },
     "5022": {
       "status": "Active",
-      "injury_status": "Out",
-      "news_updated": 1790973639482
+      "injury_status": null,
+      "news_updated": 1792393805584
     },
     "8110": {
       "status": "Active",
@@ -834,7 +834,7 @@
     "5849": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1790909116711
+      "news_updated": 1792463433424
     },
     "13285": {
       "status": "Active",
@@ -1070,6 +1070,26 @@
       "status": "Active",
       "injury_status": null,
       "news_updated": 1792488338094
+    },
+    "10235": {
+      "status": "Active",
+      "injury_status": null,
+      "news_updated": 1792419907378
+    },
+    "9501": {
+      "status": "Active",
+      "injury_status": null,
+      "news_updated": 1792449911098
+    },
+    "11565": {
+      "status": "Active",
+      "injury_status": null,
+      "news_updated": 1792513538930
+    },
+    "11559": {
+      "status": "Active",
+      "injury_status": "Questionable",
+      "news_updated": 1792402206219
     }
   },
   "seen_trending_ids": [
@@ -1155,8 +1175,8 @@
   ],
   "seen_news_ids": [
     50105860,
-    49960453,
     49868293,
+    49960453,
     50230791,
     50163209,
     49528330,
@@ -1663,7 +1683,7 @@
     "MikeGarafolo": "12513132"
   },
   "x_last_seen_ids": {
-    "AdamSchefter": "2112680798985850981",
+    "AdamSchefter": "2112727503949398317",
     "RapSheet": "2112694347422457908",
     "TomPelissero": "2112701926060290275",
     "FieldYates": "2112646084346761546",
@@ -2040,13 +2060,6 @@
       "status_pair": [
         "Active",
         "Out"
-      ]
-    },
-    "9224": {
-      "ts": 1791959729.2516723,
-      "status_pair": [
-        "Active",
-        null
       ]
     },
     "12514": {
@@ -2623,13 +2636,6 @@
         null
       ]
     },
-    "13264": {
-      "ts": 1791959729.2516923,
-      "status_pair": [
-        "Active",
-        null
-      ]
-    },
     "11577": {
       "ts": 1792298733.5012488,
       "status_pair": [
@@ -2856,6 +2862,27 @@
     },
     "11610": {
       "ts": 1792529091.7646506,
+      "status_pair": [
+        "Active",
+        null
+      ]
+    },
+    "5849": {
+      "ts": 1792566777.8069005,
+      "status_pair": [
+        "Active",
+        null
+      ]
+    },
+    "5022": {
+      "ts": 1792566777.8069851,
+      "status_pair": [
+        "Active",
+        null
+      ]
+    },
+    "13276": {
+      "ts": 1792566777.8071225,
       "status_pair": [
         "Active",
         null
