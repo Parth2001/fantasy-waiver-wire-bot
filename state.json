@@ -1175,8 +1175,8 @@
   ],
   "seen_news_ids": [
     50105860,
-    49868293,
     49960453,
+    49868293,
     50230791,
     50163209,
     49528330,
@@ -1683,11 +1683,11 @@
     "MikeGarafolo": "12513132"
   },
   "x_last_seen_ids": {
-    "AdamSchefter": "2112966047317794863",
-    "RapSheet": "2112960547776000438",
-    "TomPelissero": "2112963389685199087",
-    "FieldYates": "2112964757984608260",
-    "MikeGarafolo": "2112960486027178116"
+    "AdamSchefter": "2112990201337520249",
+    "RapSheet": "2112989340892627016",
+    "TomPelissero": "2112988284309721206",
+    "FieldYates": "2112996870029279370",
+    "MikeGarafolo": "2113018021220638744"
   },
   "players_cache_fetched_at": 1792587502.9738722,
   "alerted_players_recent": {
@@ -2517,13 +2517,6 @@
         null
       ]
     },
-    "7049": {
-      "ts": 1792011118.1550508,
-      "status_pair": [
-        "Active",
-        null
-      ]
-    },
     "8408": {
       "ts": 1792478701.8761487,
       "status_pair": [
@@ -2669,13 +2662,6 @@
       "status_pair": [
         "Inactive",
         "IR"
-      ]
-    },
-    "4018": {
-      "ts": 1792011118.1498222,
-      "status_pair": [
-        "Active",
-        "Questionable"
       ]
     },
     "10229": {
