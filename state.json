@@ -1120,6 +1120,11 @@
       "status": "Active",
       "injury_status": "Questionable",
       "news_updated": 1793034018470
+    },
+    "1373": {
+      "status": "Active",
+      "injury_status": null,
+      "news_updated": 1793128504881
     }
   },
   "seen_trending_ids": [
@@ -1713,11 +1718,11 @@
     "MikeGarafolo": "12513132"
   },
   "x_last_seen_ids": {
-    "AdamSchefter": "2115477994907021467",
-    "RapSheet": "2115482027369832834",
+    "AdamSchefter": "2115555222428831782",
+    "RapSheet": "2115554077941899562",
     "TomPelissero": "2115428888809451769",
-    "FieldYates": "2115437075248091566",
-    "MikeGarafolo": "2115482655018065970"
+    "FieldYates": "2115526030832365755",
+    "MikeGarafolo": "2115553738794336587"
   },
   "players_cache_fetched_at": 1793206236.4916224,
   "alerted_players_recent": {
@@ -2814,7 +2819,7 @@
       ]
     },
     "12536": {
-      "ts": 1793002134.2607207,
+      "ts": 1793222657.9105887,
       "status_pair": [
         "Active",
         "Questionable"
