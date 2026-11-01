@@ -1125,6 +1125,11 @@
       "status": "Active",
       "injury_status": null,
       "news_updated": 1793459122578
+    },
+    "12547": {
+      "status": "Active",
+      "injury_status": null,
+      "news_updated": 1792814154193
     }
   },
   "seen_trending_ids": [
@@ -1210,8 +1215,8 @@
   ],
   "seen_news_ids": [
     50058762,
-    49872395,
     50109963,
+    49872395,
     50085386,
     49956367,
     50116111,
@@ -2105,7 +2110,7 @@
       ]
     },
     "4881": {
-      "ts": 1793406006.5180962,
+      "ts": 1793565789.974897,
       "status_pair": [
         "Active",
         null
