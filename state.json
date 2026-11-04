@@ -14,7 +14,7 @@
     "5947": {
       "status": "Active",
       "injury_status": "Questionable",
-      "news_updated": 1793673350468
+      "news_updated": 1793744428384
     },
     "13298": {
       "status": "Active",
@@ -49,7 +49,7 @@
     "8146": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1793575839371
+      "news_updated": 1793731527032
     },
     "12469": {
       "status": "Inactive",
@@ -58,7 +58,7 @@
     },
     "12514": {
       "status": "Active",
-      "injury_status": "Out",
+      "injury_status": "Questionable",
       "news_updated": 1793642146759
     },
     "4037": {
@@ -89,7 +89,7 @@
     "9502": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1793062526792
+      "news_updated": 1793774431665
     },
     "9225": {
       "status": "Active",
@@ -118,13 +118,13 @@
     },
     "12529": {
       "status": "Active",
-      "injury_status": "Out",
+      "injury_status": "Questionable",
       "news_updated": 1793467823673
     },
     "13287": {
-      "status": "Active",
-      "injury_status": "Out",
-      "news_updated": 1793666149665
+      "status": "Inactive",
+      "injury_status": "IR",
+      "news_updated": 1793740528278
     },
     "6770": {
       "status": "Active",
@@ -188,17 +188,17 @@
     },
     "7547": {
       "status": "Active",
-      "injury_status": "Questionable",
+      "injury_status": null,
       "news_updated": 1793583040865
     },
     "8155": {
       "status": "Active",
-      "injury_status": "Out",
+      "injury_status": "Questionable",
       "news_updated": 1793720156001
     },
     "5872": {
       "status": "Active",
-      "injury_status": "Out",
+      "injury_status": "Questionable",
       "news_updated": 1793079029372
     },
     "8134": {
@@ -263,13 +263,13 @@
     },
     "2216": {
       "status": "Active",
-      "injury_status": "Out",
+      "injury_status": "Questionable",
       "news_updated": 1793079029037
     },
     "8132": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1793629545410
+      "news_updated": 1793751629452
     },
     "9487": {
       "status": "Active",
@@ -278,7 +278,7 @@
     },
     "7525": {
       "status": "Active",
-      "injury_status": "Out",
+      "injury_status": "Questionable",
       "news_updated": 1793393415849
     },
     "5022": {
@@ -288,7 +288,7 @@
     },
     "8110": {
       "status": "Active",
-      "injury_status": "Out",
+      "injury_status": "Questionable",
       "news_updated": 1793664049389
     },
     "2449": {
@@ -319,7 +319,7 @@
     "4881": {
       "status": "Inactive",
       "injury_status": "Out",
-      "news_updated": 1793666149623
+      "news_updated": 1793739928014
     },
     "12519": {
       "status": "Active",
@@ -343,8 +343,8 @@
     },
     "5995": {
       "status": "Active",
-      "injury_status": "Questionable",
-      "news_updated": 1793677250739
+      "injury_status": null,
+      "news_updated": 1793751029264
     },
     "12507": {
       "status": "Active",
@@ -353,7 +353,7 @@
     },
     "5892": {
       "status": "Active",
-      "injury_status": "Out",
+      "injury_status": "Questionable",
       "news_updated": 1793653548210
     },
     "6904": {
@@ -384,7 +384,7 @@
     "8137": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1793719555988
+      "news_updated": 1793739027807
     },
     "9504": {
       "status": "Active",
@@ -394,11 +394,11 @@
     "12490": {
       "status": "Active",
       "injury_status": "Questionable",
-      "news_updated": 1793672150479
+      "news_updated": 1793743528432
     },
     "8154": {
       "status": "Active",
-      "injury_status": "Out",
+      "injury_status": "Questionable",
       "news_updated": 1793552736171
     },
     "3294": {
@@ -448,7 +448,7 @@
     },
     "8138": {
       "status": "Active",
-      "injury_status": "Questionable",
+      "injury_status": null,
       "news_updated": 1793588440157
     },
     "8148": {
@@ -463,7 +463,7 @@
     },
     "12534": {
       "status": "Active",
-      "injury_status": "Out",
+      "injury_status": "Questionable",
       "news_updated": 1793467225458
     },
     "12533": {
@@ -489,7 +489,7 @@
     "11610": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1793594742399
+      "news_updated": 1793730027020
     },
     "6797": {
       "status": "Active",
@@ -568,7 +568,7 @@
     },
     "5859": {
       "status": "Active",
-      "injury_status": "Out",
+      "injury_status": "Questionable",
       "news_updated": 1793639748149
     },
     "4892": {
@@ -584,7 +584,7 @@
     "8126": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1793623546413
+      "news_updated": 1793736027496
     },
     "11560": {
       "status": "Active",
@@ -634,12 +634,12 @@
     "5850": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1793651147792
+      "news_updated": 1793733027239
     },
     "11631": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1793634347757
+      "news_updated": 1793761230276
     },
     "9221": {
       "status": "Active",
@@ -733,7 +733,7 @@
     },
     "12474": {
       "status": "Active",
-      "injury_status": "Questionable",
+      "injury_status": null,
       "news_updated": 1792998314973
     },
     "9488": {
@@ -774,7 +774,7 @@
     "11625": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1793598941561
+      "news_updated": 1793759130022
     },
     "6806": {
       "status": "Active",
@@ -789,7 +789,7 @@
     "11583": {
       "status": "Inactive",
       "injury_status": "IR",
-      "news_updated": 1793654748515
+      "news_updated": 1793736627692
     },
     "8180": {
       "status": "Active",
@@ -803,7 +803,7 @@
     },
     "8112": {
       "status": "Active",
-      "injury_status": "Questionable",
+      "injury_status": null,
       "news_updated": 1793593242455
     },
     "13281": {
@@ -1032,9 +1032,9 @@
       "news_updated": 1791941433036
     },
     "4454": {
-      "status": "Active",
-      "injury_status": "Out",
-      "news_updated": 1793660749088
+      "status": "Inactive",
+      "injury_status": "IR",
+      "news_updated": 1793742029456
     },
     "11647": {
       "status": "Active",
@@ -1059,7 +1059,7 @@
     "3271": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1793625647057
+      "news_updated": 1793775331963
     },
     "7670": {
       "status": "Active",
@@ -1084,7 +1084,7 @@
     "11565": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1793125804605
+      "news_updated": 1793764830747
     },
     "11559": {
       "status": "Active",
@@ -1094,7 +1094,7 @@
     "4017": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1793594142213
+      "news_updated": 1793772331517
     },
     "9757": {
       "status": "Active",
@@ -1129,7 +1129,7 @@
     "12547": {
       "status": "Active",
       "injury_status": null,
-      "news_updated": 1793594441464
+      "news_updated": 1793774731841
     }
   },
   "seen_trending_ids": [
@@ -1215,10 +1215,10 @@
   ],
   "seen_news_ids": [
     50085386,
-    49872395,
     50109963,
-    49956367,
+    49872395,
     50116111,
+    49956367,
     50058769,
     50337296,
     49659411,
@@ -1231,8 +1231,8 @@
     49942037,
     49933851,
     49993238,
-    49749533,
     50109981,
+    49749533,
     49960479,
     50118173,
     49960481,
@@ -1729,7 +1729,7 @@
     "FieldYates": "2115526030832365755",
     "MikeGarafolo": "2115553738794336587"
   },
-  "players_cache_fetched_at": 1793730532.4451947,
+  "players_cache_fetched_at": 1793790443.3868468,
   "alerted_players_recent": {
     "1479": {
       "ts": 1793730532.5826817,
@@ -1739,17 +1739,17 @@
       ]
     },
     "12529": {
-      "ts": 1793526118.9981787,
+      "ts": 1793790443.5269616,
       "status_pair": [
         "Active",
-        "Out"
+        "Questionable"
       ]
     },
     "12534": {
-      "ts": 1793466918.8417735,
+      "ts": 1793790443.525058,
       "status_pair": [
         "Active",
-        "Out"
+        "Questionable"
       ]
     },
     "12501": {
@@ -1774,10 +1774,10 @@
       ]
     },
     "13287": {
-      "ts": 1793676663.3368304,
+      "ts": 1793790443.5266318,
       "status_pair": [
-        "Active",
-        "Out"
+        "Inactive",
+        "IR"
       ]
     },
     "8130": {
@@ -1802,7 +1802,7 @@
       ]
     },
     "11631": {
-      "ts": 1793624945.270622,
+      "ts": 1793790443.5267587,
       "status_pair": [
         "Active",
         null
@@ -1858,7 +1858,7 @@
       ]
     },
     "8146": {
-      "ts": 1793577322.903709,
+      "ts": 1793790443.5269794,
       "status_pair": [
         "Active",
         null
@@ -1935,10 +1935,10 @@
       ]
     },
     "12514": {
-      "ts": 1793676663.3367007,
+      "ts": 1793790443.5266578,
       "status_pair": [
         "Active",
-        "Out"
+        "Questionable"
       ]
     },
     "9753": {
@@ -1991,10 +1991,10 @@
       ]
     },
     "7525": {
-      "ts": 1793406006.5218017,
+      "ts": 1793790443.5268724,
       "status_pair": [
         "Active",
-        "Out"
+        "Questionable"
       ]
     },
     "7526": {
@@ -2033,7 +2033,7 @@
       ]
     },
     "4881": {
-      "ts": 1793676663.3365674,
+      "ts": 1793790443.5268166,
       "status_pair": [
         "Inactive",
         "Out"
@@ -2068,7 +2068,7 @@
       ]
     },
     "11625": {
-      "ts": 1793624945.2706726,
+      "ts": 1793790443.5249314,
       "status_pair": [
         "Active",
         null
@@ -2096,21 +2096,21 @@
       ]
     },
     "8110": {
-      "ts": 1793676663.3368838,
+      "ts": 1793790443.528501,
       "status_pair": [
         "Active",
-        "Out"
+        "Questionable"
       ]
     },
     "8155": {
-      "ts": 1793676663.3366559,
+      "ts": 1793790443.5285158,
       "status_pair": [
         "Active",
-        "Out"
+        "Questionable"
       ]
     },
     "8132": {
-      "ts": 1793676663.336746,
+      "ts": 1793790443.5268002,
       "status_pair": [
         "Active",
         null
@@ -2131,10 +2131,10 @@
       ]
     },
     "8112": {
-      "ts": 1793577322.9050493,
+      "ts": 1793790443.5266755,
       "status_pair": [
         "Active",
-        "Questionable"
+        null
       ]
     },
     "12481": {
@@ -2145,10 +2145,10 @@
       ]
     },
     "5995": {
-      "ts": 1793676663.3371742,
+      "ts": 1793790443.5250404,
       "status_pair": [
         "Active",
-        "Questionable"
+        null
       ]
     },
     "9484": {
@@ -2166,7 +2166,7 @@
       ]
     },
     "8126": {
-      "ts": 1793624945.2703037,
+      "ts": 1793790443.526909,
       "status_pair": [
         "Active",
         null
@@ -2180,10 +2180,10 @@
       ]
     },
     "5859": {
-      "ts": 1793676663.3364308,
+      "ts": 1793790443.5268912,
       "status_pair": [
         "Active",
-        "Out"
+        "Questionable"
       ]
     },
     "3321": {
@@ -2264,14 +2264,14 @@
       ]
     },
     "8154": {
-      "ts": 1793577322.898352,
+      "ts": 1793790443.5266979,
       "status_pair": [
         "Active",
-        "Out"
+        "Questionable"
       ]
     },
     "5850": {
-      "ts": 1793657943.9610324,
+      "ts": 1793790443.5249653,
       "status_pair": [
         "Active",
         null
@@ -2411,7 +2411,7 @@
       ]
     },
     "8137": {
-      "ts": 1793676663.3368707,
+      "ts": 1793790443.5270097,
       "status_pair": [
         "Active",
         null
@@ -2439,10 +2439,10 @@
       ]
     },
     "4454": {
-      "ts": 1793676663.3366685,
+      "ts": 1793790443.5283766,
       "status_pair": [
-        "Active",
-        "Out"
+        "Inactive",
+        "IR"
       ]
     },
     "13345": {
@@ -2453,14 +2453,14 @@
       ]
     },
     "3271": {
-      "ts": 1793624945.2706854,
+      "ts": 1793790443.5267272,
       "status_pair": [
         "Active",
         null
       ]
     },
     "11610": {
-      "ts": 1793624945.2698762,
+      "ts": 1793790443.5250185,
       "status_pair": [
         "Active",
         null
@@ -2544,7 +2544,7 @@
       ]
     },
     "11583": {
-      "ts": 1793676663.3370748,
+      "ts": 1793790443.528435,
       "status_pair": [
         "Inactive",
         "IR"
@@ -2565,7 +2565,7 @@
       ]
     },
     "4017": {
-      "ts": 1793577322.9014862,
+      "ts": 1793790443.5284185,
       "status_pair": [
         "Active",
         null
@@ -2579,10 +2579,10 @@
       ]
     },
     "7547": {
-      "ts": 1793577322.8983204,
+      "ts": 1793790443.5249853,
       "status_pair": [
         "Active",
-        "Questionable"
+        null
       ]
     },
     "6819": {
@@ -2614,7 +2614,7 @@
       ]
     },
     "5947": {
-      "ts": 1793676663.3370283,
+      "ts": 1793790443.5250022,
       "status_pair": [
         "Active",
         "Questionable"
@@ -2663,7 +2663,7 @@
       ]
     },
     "12490": {
-      "ts": 1793676663.3371158,
+      "ts": 1793790443.524887,
       "status_pair": [
         "Active",
         "Questionable"
@@ -2698,10 +2698,10 @@
       ]
     },
     "8138": {
-      "ts": 1793577322.9037483,
+      "ts": 1793790443.5284023,
       "status_pair": [
         "Active",
-        "Questionable"
+        null
       ]
     },
     "7523": {
@@ -2775,7 +2775,7 @@
       ]
     },
     "12547": {
-      "ts": 1793624945.2705345,
+      "ts": 1793790443.5284708,
       "status_pair": [
         "Active",
         null
@@ -2803,10 +2803,10 @@
       ]
     },
     "5892": {
-      "ts": 1793676663.3370395,
+      "ts": 1793790443.526835,
       "status_pair": [
         "Active",
-        "Out"
+        "Questionable"
       ]
     },
     "11834": {
@@ -2814,6 +2814,41 @@
       "status_pair": [
         "Active",
         null
+      ]
+    },
+    "12474": {
+      "ts": 1793790443.526774,
+      "status_pair": [
+        "Active",
+        null
+      ]
+    },
+    "9502": {
+      "ts": 1793790443.5269232,
+      "status_pair": [
+        "Active",
+        null
+      ]
+    },
+    "11565": {
+      "ts": 1793790443.526995,
+      "status_pair": [
+        "Active",
+        null
+      ]
+    },
+    "5872": {
+      "ts": 1793790443.5284555,
+      "status_pair": [
+        "Active",
+        "Questionable"
+      ]
+    },
+    "2216": {
+      "ts": 1793790443.5285316,
+      "status_pair": [
+        "Active",
+        "Questionable"
       ]
     }
   }
